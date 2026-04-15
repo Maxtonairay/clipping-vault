@@ -1,162 +1,99 @@
-"use client";
-
-import { useState } from "react";
-import ClipCard from "@/components/ClipCard";
-import type { Clip } from "@/lib/mock-data";
-
-type Status = "idle" | "loading" | "done" | "error";
-
-interface ProcessResult {
-  id: string;
-  title: string;
-  clips: Clip[];
-}
+'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function UploadPage() {
-  const [url, setUrl] = useState("");
-  const [status, setStatus] = useState<Status>("idle");
-  const [result, setResult] = useState<ProcessResult | null>(null);
-  const [error, setError] = useState("");
-  const [dragOver, setDragOver] = useState(false);
+  const [url, setUrl] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const router = useRouter();
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url.trim()) return;
-
-    setStatus("loading");
-    setError("");
-    setResult(null);
-
-    try {
-      const res = await fetch("/api/process", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Processing failed");
-      }
-
-      const data = await res.json();
-      setResult(data);
-      setStatus("done");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-      setStatus("error");
-    }
-  }
+    setLoading(true);
+    setTimeout(() => router.push('/vault'), 2000);
+  };
 
   return (
-    <div className="flex flex-col gap-8">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Upload</h1>
-        <p className="mt-1 text-sm text-[var(--color-muted)]">
-          Paste a YouTube URL or drop a video file to generate clips
-        </p>
+    <div style={{ padding: '2rem', maxWidth: '720px' }}>
+      <div style={{ marginBottom: '2rem' }}>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: '0.25rem' }}>New upload</h1>
+        <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Drop a YouTube link or upload a video file to get started</p>
       </div>
 
-      {/* URL Input */}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="flex gap-3">
+      {/* Steps */}
+      <div style={{ display: 'flex', gap: '0', marginBottom: '2.5rem' }}>
+        {['Upload', 'Process', 'Review clips'].map((step, i) => (
+          <div key={step} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{
+              width: '24px', height: '24px', borderRadius: '50%',
+              background: i === 0 ? '#7c3aed' : 'var(--surface)',
+              border: `1px solid ${i === 0 ? '#7c3aed' : 'var(--border)'}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '0.7rem', fontWeight: 700,
+              color: i === 0 ? 'white' : 'var(--text-dim)'
+            }}>{i + 1}</div>
+            <span style={{ fontSize: '0.8rem', color: i === 0 ? 'var(--text)' : 'var(--text-dim)', fontWeight: i === 0 ? 600 : 400 }}>{step}</span>
+            {i < 2 && <div style={{ width: '32px', height: '1px', background: 'var(--border)', margin: '0 8px' }}/>}
+          </div>
+        ))}
+      </div>
+
+      {/* YouTube URL */}
+      <div style={{
+        background: 'var(--surface)', border: '1px solid var(--border)',
+        borderRadius: 'var(--radius-lg)', padding: '1.75rem', marginBottom: '1rem'
+      }}>
+        <div style={{ fontWeight: 700, marginBottom: '0.25rem' }}>Paste a YouTube link</div>
+        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+          Supports YouTube videos, shorts, and podcast episodes
+        </div>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px' }}>
           <input
             type="url"
             value={url}
-            onChange={(e) => setUrl(e.target.value)}
+            onChange={e => setUrl(e.target.value)}
             placeholder="https://youtube.com/watch?v=..."
-            className="flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2.5 text-sm text-[var(--color-foreground)] placeholder:text-[var(--color-muted)] outline-none transition-colors focus:border-[var(--color-accent)]"
+            style={{
+              flex: 1, padding: '0.7rem 1rem',
+              background: 'var(--bg)', border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-sm)', color: 'var(--text)',
+              fontSize: '0.875rem', outline: 'none', fontFamily: 'inherit'
+            }}
           />
-          <button
-            type="submit"
-            disabled={status === "loading" || !url.trim()}
-            className="rounded-lg bg-[var(--color-accent)] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-accent-hover)] disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {status === "loading" ? "Processing..." : "Process"}
-          </button>
-        </div>
-      </form>
-
-      {/* Drag-drop zone */}
-      <div
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragOver(true);
-        }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDragOver(false);
-        }}
-        className={`flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-12 transition-colors ${
-          dragOver
-            ? "border-[var(--color-accent)] bg-[rgba(139,92,246,0.06)]"
-            : "border-[var(--color-border)] bg-[var(--color-surface)]"
-        }`}
-      >
-        <svg
-          width="40"
-          height="40"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-[var(--color-muted)]"
-        >
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-          <polyline points="17 8 12 3 7 8" />
-          <line x1="12" y1="3" x2="12" y2="15" />
-        </svg>
-        <p className="text-sm text-[var(--color-muted)]">
-          Drag and drop a video file here
-        </p>
-        <p className="text-[12px] text-[var(--color-muted)] opacity-60">
-          MP4, MOV, WebM up to 500 MB
-        </p>
+          <button type="submit" disabled={loading || !url.trim()} style={{
+            background: '#7c3aed', color: 'white', border: 'none',
+            padding: '0.7rem 1.25rem', borderRadius: 'var(--radius-sm)',
+            fontSize: '0.875rem', fontWeight: 600, cursor: loading ? 'wait' : 'pointer',
+            opacity: !url.trim() ? 0.5 : 1
+          }}>{loading ? 'Processing...' : 'Process →'}</button>
+        </form>
       </div>
 
-      {/* Error */}
-      {status === "error" && (
-        <div className="rounded-lg border border-[var(--color-danger)]/30 bg-[var(--color-danger)]/5 px-4 py-3 text-sm text-[var(--color-danger)]">
-          {error}
-        </div>
-      )}
+      {/* Divider */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '1rem 0' }}>
+        <div style={{ flex: 1, height: '1px', background: 'var(--border)' }}/>
+        <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>or</span>
+        <div style={{ flex: 1, height: '1px', background: 'var(--border)' }}/>
+      </div>
 
-      {/* Loading */}
-      {status === "loading" && (
-        <div className="flex flex-col items-center gap-3 py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--color-border)] border-t-[var(--color-accent)]" />
-          <p className="text-sm text-[var(--color-muted)]">
-            Analyzing video and generating clips...
-          </p>
-        </div>
-      )}
-
-      {/* Results */}
-      {status === "done" && result && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold">
-                {result.clips.length} Clips Generated
-              </h2>
-              <p className="text-[13px] text-[var(--color-muted)]">
-                From: {result.title}
-              </p>
-            </div>
-            <span className="rounded-full bg-[var(--color-success)]/10 px-3 py-1 text-[12px] font-semibold text-[var(--color-success)]">
-              Complete
-            </span>
-          </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            {result.clips.map((clip) => (
-              <ClipCard key={clip.id} clip={clip} />
-            ))}
-          </div>
-        </div>
-      )}
+      {/* File drop */}
+      <div
+        onDragOver={e => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={e => { e.preventDefault(); setDragging(false); }}
+        style={{
+          background: dragging ? 'rgba(124,58,237,0.08)' : 'var(--surface)',
+          border: `2px dashed ${dragging ? '#7c3aed' : 'var(--border)'}`,
+          borderRadius: 'var(--radius-lg)', padding: '3rem 2rem',
+          textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s'
+        }}
+      >
+        <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem', opacity: 0.4 }}>↑</div>
+        <div style={{ fontWeight: 600, marginBottom: '0.35rem' }}>Drop your video here</div>
+        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>MP4, MOV, MKV — up to 2GB</div>
+      </div>
     </div>
   );
 }

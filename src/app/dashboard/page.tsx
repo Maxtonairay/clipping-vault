@@ -1,123 +1,56 @@
-import Link from "next/link";
-import ClipCard from "@/components/ClipCard";
-import { mockVideos, stats } from "@/lib/mock-data";
+import Link from 'next/link';
+import ClipCard from '@/components/ClipCard';
+import { mockVideos } from '@/lib/mock-data';
 
-const statCards = [
-  { label: "Videos Processed", value: stats.totalVideos, color: "var(--color-accent)" },
-  { label: "Clips Generated", value: stats.totalClips, color: "var(--color-success)" },
-  { label: "Total Duration", value: stats.totalDuration, color: "var(--color-warning)" },
-  { label: "Platforms", value: Object.keys(stats.platforms).length, color: "#06b6d4" },
+const stats = [
+  { label: 'Videos processed', value: '12' },
+  { label: 'Clips generated', value: '68' },
+  { label: 'Hours saved', value: '14h' },
+  { label: 'Platforms exported', value: '3' },
 ];
 
 export default function DashboardPage() {
-  const recentClips = mockVideos.flatMap((v) => v.clips).slice(0, 6);
+  const recentClips = mockVideos.flatMap(v => v.clips).slice(0, 6);
 
   return (
-    <div className="flex flex-col gap-8">
+    <div style={{ padding: '2rem', maxWidth: '1100px' }}>
+
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="mt-1 text-sm text-[var(--color-muted)]">
-            Overview of your clipping activity
-          </p>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: '0.25rem' }}>Dashboard</h1>
+          <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Your clipping activity at a glance</p>
         </div>
-        <Link
-          href="/upload"
-          className="rounded-lg bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-accent-hover)]"
-        >
-          + New Upload
-        </Link>
+        <Link href="/upload" style={{
+          background: '#7c3aed', color: 'white', padding: '0.6rem 1.25rem',
+          borderRadius: 'var(--radius-sm)', fontSize: '0.875rem', fontWeight: 600,
+          display: 'inline-flex', alignItems: 'center', gap: '6px'
+        }}>+ New upload</Link>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {statCards.map((s) => (
-          <div
-            key={s.label}
-            className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
-          >
-            <p className="text-[12px] font-medium text-[var(--color-muted)]">
-              {s.label}
-            </p>
-            <p
-              className="mt-1 text-2xl font-bold tabular-nums"
-              style={{ color: s.color }}
-            >
-              {s.value}
-            </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
+        {stats.map(s => (
+          <div key={s.label} style={{
+            background: 'var(--surface)', border: '1px solid var(--border)',
+            borderRadius: 'var(--radius)', padding: '1.25rem'
+          }}>
+            <div style={{ fontSize: '1.75rem', fontWeight: 800, letterSpacing: '-0.04em', marginBottom: '0.25rem' }}>{s.value}</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{s.label}</div>
           </div>
         ))}
       </div>
 
-      {/* Recent Videos */}
-      <div>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Recent Videos</h2>
-          <Link
-            href="/vault"
-            className="text-[13px] text-[var(--color-accent)] hover:underline"
-          >
-            View all
-          </Link>
-        </div>
-        <div className="flex flex-col gap-2">
-          {mockVideos.map((video) => (
-            <div
-              key={video.id}
-              className="flex items-center justify-between rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 transition-colors hover:border-[var(--color-border-hover)]"
-            >
-              <div className="flex flex-col gap-0.5">
-                <span className="text-[14px] font-semibold">{video.title}</span>
-                <span className="text-[12px] text-[var(--color-muted)]">
-                  {video.clips.length} clips &middot;{" "}
-                  {new Date(video.processedAt).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </span>
-              </div>
-              <div className="flex gap-1">
-                {[...new Set(video.clips.map((c) => c.platform))].map((p) => (
-                  <span
-                    key={p}
-                    className="rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white/90"
-                    style={{
-                      background:
-                        p === "reels"
-                          ? "#E1306C"
-                          : p === "tiktok"
-                            ? "#00f2ea"
-                            : "#FF0000",
-                      color: p === "tiktok" ? "#000" : undefined,
-                    }}
-                  >
-                    {p}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* Recent clips */}
+      <div style={{ marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <h2 style={{ fontSize: '1rem', fontWeight: 700 }}>Recent clips</h2>
+        <Link href="/vault" style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>View all →</Link>
       </div>
 
-      {/* Recent Clips */}
-      <div>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Latest Clips</h2>
-          <Link
-            href="/vault"
-            className="text-[13px] text-[var(--color-accent)] hover:underline"
-          >
-            View all
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {recentClips.map((clip) => (
-            <ClipCard key={clip.id} clip={clip} />
-          ))}
-        </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
+        {recentClips.map(clip => <ClipCard key={clip.id} clip={clip} />)}
       </div>
+
     </div>
   );
 }

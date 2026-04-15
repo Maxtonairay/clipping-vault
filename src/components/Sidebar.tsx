@@ -1,119 +1,71 @@
-"use client";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+'use client';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const nav = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutIcon },
-  { href: "/upload", label: "Upload", icon: UploadIcon },
-  { href: "/vault", label: "Vault", icon: VaultIcon },
+  { href: '/dashboard', label: 'Dashboard', icon: '▦' },
+  { href: '/upload', label: 'New Upload', icon: '↑' },
+  { href: '/vault', label: 'Vault', icon: '⊞' },
 ];
 
 export default function Sidebar() {
-  const pathname = usePathname();
+  const path = usePathname();
 
   return (
-    <>
-      {/* Mobile top bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 md:hidden">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--color-accent)]">
-            <span className="text-xs font-bold text-white">CV</span>
-          </div>
-          <span className="text-sm font-semibold">Clipping Vault</span>
+    <aside style={{
+      width: '220px', minHeight: '100vh', flexShrink: 0,
+      background: 'var(--surface)', borderRight: '1px solid var(--border)',
+      display: 'flex', flexDirection: 'column', padding: '1.25rem 0'
+    }}>
+      {/* Logo */}
+      <div style={{ padding: '0 1.25rem', marginBottom: '2rem' }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <svg width="24" height="24" viewBox="0 0 52 52" fill="none">
+            <rect x="1" y="1" width="50" height="50" rx="0" fill="#18181b" stroke="#7c3aed" strokeWidth="1.5"/>
+            <circle cx="26" cy="26" r="13" stroke="#7c3aed" strokeWidth="1.5" fill="none"/>
+            <circle cx="26" cy="26" r="6" fill="#7c3aed" fillOpacity="0.25" stroke="#7c3aed" strokeWidth="1.2"/>
+            <line x1="26" y1="13" x2="26" y2="18" stroke="#7c3aed" strokeWidth="1.8" strokeLinecap="round"/>
+            <line x1="26" y1="34" x2="26" y2="39" stroke="#7c3aed" strokeWidth="1.8" strokeLinecap="round"/>
+            <line x1="13" y1="26" x2="18" y2="26" stroke="#7c3aed" strokeWidth="1.8" strokeLinecap="round"/>
+            <line x1="34" y1="26" x2="39" y2="26" stroke="#7c3aed" strokeWidth="1.8" strokeLinecap="round"/>
+            <line x1="1" y1="7" x2="51" y2="7" stroke="#7c3aed" strokeWidth="1" opacity="0.6"/>
+            <line x1="1" y1="45" x2="51" y2="45" stroke="#7c3aed" strokeWidth="1" opacity="0.6"/>
+          </svg>
+          <span style={{ fontWeight: 800, fontSize: '0.95rem', letterSpacing: '-0.02em' }}>
+            Clipping<span style={{ color: '#7c3aed' }}>Vault</span>
+          </span>
         </Link>
-        <div className="flex gap-1">
-          {nav.map((item) => {
-            const active = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`rounded-lg p-2 transition-colors ${
-                  active
-                    ? "bg-[var(--color-accent)] text-white"
-                    : "text-[var(--color-muted)] hover:text-[var(--color-foreground)]"
-                }`}
-              >
-                <item.icon />
-              </Link>
-            );
-          })}
-        </div>
+      </div>
+
+      {/* Nav */}
+      <nav style={{ flex: 1, padding: '0 0.75rem', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+        {nav.map(item => {
+          const active = path === item.href;
+          return (
+            <Link key={item.href} href={item.href} style={{
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '0.55rem 0.75rem', borderRadius: 'var(--radius-sm)',
+              fontSize: '0.875rem', fontWeight: active ? 600 : 400,
+              color: active ? 'var(--text)' : 'var(--text-secondary)',
+              background: active ? 'var(--accent-subtle)' : 'transparent',
+              borderLeft: active ? '2px solid #7c3aed' : '2px solid transparent',
+              transition: 'all 0.15s'
+            }}>
+              <span style={{ fontSize: '1rem', opacity: active ? 1 : 0.6 }}>{item.icon}</span>
+              {item.label}
+            </Link>
+          );
+        })}
       </nav>
 
-      {/* Desktop sidebar */}
-      <aside className="fixed left-0 top-0 bottom-0 z-50 hidden w-[240px] flex-col border-r border-[var(--color-border)] bg-[var(--color-surface)] md:flex">
-        <div className="flex items-center gap-2.5 px-5 py-5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--color-accent)]">
-            <span className="text-xs font-bold text-white">CV</span>
-          </div>
-          <span className="text-[15px] font-semibold tracking-tight">
-            Clipping Vault
-          </span>
+      {/* Bottom */}
+      <div style={{ padding: '0.75rem 1.25rem', borderTop: '1px solid var(--border)', marginTop: 'auto' }}>
+        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginBottom: '0.4rem' }}>Free Plan</div>
+        <div style={{ height: '4px', background: 'var(--border)', borderRadius: '2px', overflow: 'hidden' }}>
+          <div style={{ width: '30%', height: '100%', background: '#7c3aed', borderRadius: '2px' }}/>
         </div>
-
-        <div className="mt-2 flex flex-1 flex-col gap-0.5 px-3">
-          {nav.map((item) => {
-            const active = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors ${
-                  active
-                    ? "bg-[rgba(139,92,246,0.12)] text-[var(--color-accent)]"
-                    : "text-[var(--color-foreground-secondary)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-foreground)]"
-                }`}
-              >
-                <item.icon />
-                {item.label}
-              </Link>
-            );
-          })}
-        </div>
-
-        <div className="border-t border-[var(--color-border)] px-5 py-4">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-surface-hover)] text-[11px] font-semibold text-[var(--color-foreground-secondary)]">
-              M
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[13px] font-medium leading-tight">
-                Maxton
-              </span>
-              <span className="text-[11px] text-[var(--color-muted)]">Pro</span>
-            </div>
-          </div>
-        </div>
-      </aside>
-    </>
-  );
-}
-
-function LayoutIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="2" width="12" height="12" rx="2" />
-      <path d="M2 6h12M6 6v8" />
-    </svg>
-  );
-}
-
-function UploadIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8 10V3M5 5.5 8 3l3 2.5" />
-      <path d="M3 10v2a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-2" />
-    </svg>
-  );
-}
-
-function VaultIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="3" width="12" height="10" rx="1.5" />
-      <path d="M2 6h12M5 9.5h6" />
-    </svg>
+        <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginTop: '0.3rem' }}>3 of 10 clips used</div>
+      </div>
+    </aside>
   );
 }
