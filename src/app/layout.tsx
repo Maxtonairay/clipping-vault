@@ -1,33 +1,20 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Clipping Vault — AI Video Clipping",
-  description: "Turn long-form videos into viral short-form clips for Reels, TikTok, and Shorts.",
+  title: "Clipping Vault — Turn Long Videos Into Growth Assets",
+  description: "Upload a video or drop a YouTube link. Get back a vault of ready-to-post clips — captioned, formatted, and built for every platform.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className={inter.variable} style={{ height: '100%' }}>
+      <body style={{ minHeight: '100%', background: 'var(--bg)', color: 'var(--text)' }}>
+        {children}
+      </body>
     </html>
   );
 }
