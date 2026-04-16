@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable} style={{ height: '100%' }}>
-      <body style={{ minHeight: '100%', background: 'var(--bg)', color: 'var(--text)' }}>
+      <body style={{ minHeight: '100%', background: '#09090b', color: '#f4f4f5' }}>
         {children}
       </body>
     </html>

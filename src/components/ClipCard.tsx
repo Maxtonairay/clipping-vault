@@ -59,8 +59,7 @@ export default function ClipCard({ clip }: { clip: Clip }) {
 
       {/* Content */}
       <div style={{ padding: '1rem' }}>
-        <div style={{ fontWeight: 600, fontSize: '0.875rem', marginBottom: '0.35rem', lineHeight: 1.4 }}
-          className="truncate">{clip.title}</div>
+        <div style={{ fontWeight: 600, fontSize: '0.875rem', marginBottom: '0.35rem', lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{clip.title}</div>
         <div style={{ fontSize: '0.775rem', color: 'var(--text-secondary)', marginBottom: '1rem', lineHeight: 1.5 }}>
           {clip.hook}
         </div>
