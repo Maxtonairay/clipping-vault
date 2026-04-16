@@ -1,3 +1,4 @@
+'use client';
 interface Clip {
   id: string;
   title: string;
