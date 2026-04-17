@@ -264,7 +264,29 @@ footer{padding:1.5rem 2.5rem;border-top:1px solid var(--border);
 .footer-brand span{color:var(--accent)}
 .footer-note{font-size:.78rem;color:var(--dim)}
 
-@media(max-width:640px){.sidebar{display:none}.main{padding:1.25rem}}
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main{padding:1.25rem}
+  .app-shell{flex-direction:column}
+  .mobile-nav{display:flex!important}
+  .clips-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .hero{grid-template-columns:1fr;gap:2rem;padding:3rem 1.25rem}
+  .hero-visual{display:none}
+  .pricing-grid{grid-template-columns:1fr}
+  .feats-grid{grid-template-columns:1fr}
+  .steps-row{grid-template-columns:1fr}
+  .step-item::after{display:none}
+  h1{font-size:2.2rem}
+}
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:var(--surface);border-top:1px solid var(--border);
+  padding:.5rem 0;gap:0}
+.mobile-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;
+  gap:3px;padding:.5rem;cursor:pointer;font-size:.65rem;color:var(--muted);transition:color .15s}
+.mobile-nav-item.active{color:var(--accent)}
+.mobile-nav-item .mni{font-size:1.2rem}
+.page.active .app-shell{padding-bottom:60px}
 </style>
 </head>
 <body>
@@ -434,6 +456,19 @@ footer{padding:1.5rem 2.5rem;border-top:1px solid var(--border);
     <div class="footer-brand">Clipping<span>Vault</span></div>
     <div class="footer-note">© 2026 Clipping Vault · Built for creators serious about growth</div>
   </footer>
+</div>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobile-nav">
+  <div class="mobile-nav-item" id="mn-dashboard" onclick="showPage('dashboard')">
+    <span class="mni">▦</span><span>Dashboard</span>
+  </div>
+  <div class="mobile-nav-item" id="mn-upload" onclick="showPage('upload')">
+    <span class="mni">↑</span><span>Upload</span>
+  </div>
+  <div class="mobile-nav-item" id="mn-vault" onclick="showPage('vault')">
+    <span class="mni">⊞</span><span>Vault</span>
+  </div>
 </div>
 
 <!-- DASHBOARD -->
@@ -618,6 +653,17 @@ function showPage(name){
   window.scrollTo(0,0);
   if(name==='dashboard') renderDash();
   if(name==='vault') renderVault();
+  // Update mobile nav
+  const appPages=['dashboard','upload','vault'];
+  const mobileNav=document.getElementById('mobile-nav');
+  if(appPages.includes(name)){
+    mobileNav.style.display='flex';
+    document.querySelectorAll('.mobile-nav-item').forEach(el=>el.classList.remove('active'));
+    const mn=document.getElementById('mn-'+name);
+    if(mn) mn.classList.add('active');
+  } else {
+    mobileNav.style.display='none';
+  }
 }
 
 async function processUrl(){
